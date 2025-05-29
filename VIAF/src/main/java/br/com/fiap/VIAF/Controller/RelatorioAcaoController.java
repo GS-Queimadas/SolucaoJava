@@ -1,9 +1,9 @@
 package br.com.fiap.VIAF.Controller;
 
-import br.com.fiap.VIAF.DomainModel.Incendio;
-import br.com.fiap.VIAF.Dto.IncendioDTO;
-import br.com.fiap.VIAF.Mapper.IncendioMapper;
-import br.com.fiap.VIAF.Service.IncendioService;
+import br.com.fiap.VIAF.DomainModel.RelatorioAcao;
+import br.com.fiap.VIAF.Dto.RelatorioAcaoDTO;
+import br.com.fiap.VIAF.Mapper.RelatorioAcaoMapper;
+import br.com.fiap.VIAF.Service.RelatorioAcaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,43 +12,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/incendios")
-public class IncendioController {
+@RequestMapping("/api/relatorios-acao")
+public class RelatorioAcaoController {
 
-    private final IncendioService service;
-    private final IncendioMapper mapper;
+    private final RelatorioAcaoService service;
+    private final RelatorioAcaoMapper mapper;
 
-    public IncendioController(IncendioService service, IncendioMapper mapper) {
+    public RelatorioAcaoController(RelatorioAcaoService service, RelatorioAcaoMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
 
     @GetMapping
-    public List<IncendioDTO> findAll() {
+    public List<RelatorioAcaoDTO> findAll() {
         return service.findAll().stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IncendioDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<RelatorioAcaoDTO> findById(@PathVariable Long id) {
         return service.findById(id)
                 .map(entity -> ResponseEntity.ok(mapper.toDTO(entity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<IncendioDTO> create(@Valid @RequestBody IncendioDTO dto) {
-        Incendio toSave = mapper.toEntity(dto);
-        // carregar causa e classe se necessário antes de salvar
-        Incendio saved = service.save(toSave);
+    public ResponseEntity<RelatorioAcaoDTO> create(@Valid @RequestBody RelatorioAcaoDTO dto) {
+        RelatorioAcao saved = service.save(mapper.toEntity(dto));
         return ResponseEntity.ok(mapper.toDTO(saved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IncendioDTO> update(@PathVariable Long id, @Valid @RequestBody IncendioDTO dto) {
+    public ResponseEntity<RelatorioAcaoDTO> update(@PathVariable Long id, @Valid @RequestBody RelatorioAcaoDTO dto) {
         dto.setId(id);
-        Incendio updated = service.save(mapper.toEntity(dto));
+        RelatorioAcao updated = service.save(mapper.toEntity(dto));
         return ResponseEntity.ok(mapper.toDTO(updated));
     }
 

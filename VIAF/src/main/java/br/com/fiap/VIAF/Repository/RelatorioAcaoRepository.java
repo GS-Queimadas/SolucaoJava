@@ -1,11 +1,9 @@
 package br.com.fiap.VIAF.Repository;
 
-import br.com.fiap.VIAF.DomainModel.Incendio;
+import br.com.fiap.VIAF.DomainModel.RelatorioAcao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IncendioRepository extends JpaRepository <Incendio,Long> {
-
-
+public interface RelatorioAcaoRepository extends JpaRepository<RelatorioAcao, Long> {
 }

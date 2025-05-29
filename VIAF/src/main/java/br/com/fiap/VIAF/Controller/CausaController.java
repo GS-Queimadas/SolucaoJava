@@ -1,9 +1,9 @@
 package br.com.fiap.VIAF.Controller;
 
-import br.com.fiap.VIAF.DomainModel.Incendio;
-import br.com.fiap.VIAF.Dto.IncendioDTO;
-import br.com.fiap.VIAF.Mapper.IncendioMapper;
-import br.com.fiap.VIAF.Service.IncendioService;
+import br.com.fiap.VIAF.DomainModel.Causa;
+import br.com.fiap.VIAF.Dto.CausaDTO;
+import br.com.fiap.VIAF.Mapper.CausaMapper;
+import br.com.fiap.VIAF.Service.CausaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,43 +12,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/incendios")
-public class IncendioController {
+@RequestMapping("/api/causas")
+public class CausaController {
 
-    private final IncendioService service;
-    private final IncendioMapper mapper;
+    private final CausaService service;
+    private final CausaMapper mapper;
 
-    public IncendioController(IncendioService service, IncendioMapper mapper) {
+    public CausaController(CausaService service, CausaMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
 
     @GetMapping
-    public List<IncendioDTO> findAll() {
+    public List<CausaDTO> findAll() {
         return service.findAll().stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IncendioDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<CausaDTO> findById(@PathVariable Long id) {
         return service.findById(id)
                 .map(entity -> ResponseEntity.ok(mapper.toDTO(entity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<IncendioDTO> create(@Valid @RequestBody IncendioDTO dto) {
-        Incendio toSave = mapper.toEntity(dto);
-        // carregar causa e classe se necessário antes de salvar
-        Incendio saved = service.save(toSave);
+    public ResponseEntity<CausaDTO> create(@Valid @RequestBody CausaDTO dto) {
+        Causa saved = service.save(mapper.toEntity(dto));
         return ResponseEntity.ok(mapper.toDTO(saved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IncendioDTO> update(@PathVariable Long id, @Valid @RequestBody IncendioDTO dto) {
+    public ResponseEntity<CausaDTO> update(@PathVariable Long id, @Valid @RequestBody CausaDTO dto) {
         dto.setId(id);
-        Incendio updated = service.save(mapper.toEntity(dto));
+        Causa updated = service.save(mapper.toEntity(dto));
         return ResponseEntity.ok(mapper.toDTO(updated));
     }
 

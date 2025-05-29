@@ -1,33 +1,19 @@
 package br.com.fiap.VIAF.Mapper;
 
-import br.com.fiap.VIAF.DomainModel.Causa;
-import br.com.fiap.VIAF.DomainModel.Classe;
 import br.com.fiap.VIAF.DomainModel.Incendio;
-import br.com.fiap.VIAF.DomainModel.Localizacao;
-import br.com.fiap.VIAF.Dto.IncendioRequestDto;
-import br.com.fiap.VIAF.Dto.IncendioResponseDto;
+import br.com.fiap.VIAF.Dto.IncendioDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 
-public class IncendioMapper {
-    public static Incendio toEntity(IncendioRequestDto dto, Causa causa, Classe classe, Localizacao localizacao) {
-        Incendio incendio = new Incendio();
-        incendio.setNmIncendio(dto.getNmIncendio());
-        incendio.setAnoIncendio(dto.getAnoIncendio());
-        incendio.setCausa(causa);
-        incendio.setClasse(classe);
-        incendio.setLocalizacao(localizacao);
-        return incendio;
-    }
+@Mapper(componentModel = "spring")
+public interface IncendioMapper {
 
-    public static IncendioResponseDto toDTO(Incendio incendio) {
-        IncendioResponseDto dto = new IncendioResponseDto();
-        dto.setId(incendio.getIdIncendio());
-        dto.setNmIncendio(incendio.getNmIncendio());
-        dto.setAnoIncendio(incendio.getAnoIncendio());
-        dto.setCausaId(incendio.getCausa().getIdCausa());
-        dto.setClasseId(Long.valueOf(incendio.getClasse().getIdClasse()));
-        dto.setLocalizacaoId(incendio.getLocalizacao().getIdLocalizacao());
-        return dto;
-    }
+    @Mapping(source = "causa.id",   target = "causaId")
+    @Mapping(source = "classe.id", target = "classeId")
+    IncendioDTO toDTO(Incendio entity);
+
+    @Mapping(target = "causa", ignore = true)
+    @Mapping(target = "classe", ignore = true)
+    Incendio toEntity(IncendioDTO dto);
 }
-

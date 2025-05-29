@@ -1,17 +1,26 @@
 package br.com.fiap.VIAF.DomainModel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+import java.util.List;
+
 @Entity
 @Table(name = "SM_CLASSES")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Classe {
+
     @Id
-    private String idClasse;
+    @Column(name = "ID_CLASSE", length = 2)
+    private String id;
+
+    @Column(name = "DESCRICAO", length = 200)
     private String descricao;
+
+    @OneToMany(mappedBy = "classe", cascade = CascadeType.ALL)
+    private List<Incendio> incendios;
 }

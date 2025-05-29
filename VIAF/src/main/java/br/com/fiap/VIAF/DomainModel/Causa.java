@@ -1,19 +1,28 @@
 package br.com.fiap.VIAF.DomainModel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+import java.util.List;
+
 @Entity
 @Table(name = "SM_CAUSAS")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Causa {
     @Id
-    private Long idCausa;
+    @Column(name = "ID_CAUSA")
+    private Long id;
+
+    @Column(name = "CLASSIFICACAO_CAUSA", length = 100)
     private String classificacaoCausa;
+
+    @Column(name = "CAUSA_GERAL", length = 200)
     private String causaGeral;
 
+    @OneToMany(mappedBy = "causa", cascade = CascadeType.ALL)
+    private List<Incendio> incendios;
 }
