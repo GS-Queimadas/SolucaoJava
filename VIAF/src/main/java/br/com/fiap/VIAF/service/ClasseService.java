@@ -1,11 +1,11 @@
-package br.com.fiap.VIAF.Service;
+package br.com.fiap.VIAF.service;
 
 import br.com.fiap.VIAF.DomainModel.Classe;
+import br.com.fiap.VIAF.Exception.ResourceNotFoundException;
 import br.com.fiap.VIAF.Repository.ClasseRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClasseService {
@@ -20,14 +20,17 @@ public class ClasseService {
         return repository.findAll();
     }
 
-    public Optional<Classe> findById(String id) {
-        return repository.findById(id);
+    public Classe findById(String id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Classe", id));
     }
 
+    @Transactional
     public Classe save(Classe classe) {
         return repository.save(classe);
     }
 
+    @Transactional
     public void delete(String id) {
         repository.deleteById(id);
     }

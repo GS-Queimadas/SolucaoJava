@@ -16,16 +16,16 @@ public class OrgaoAtuacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COD_ORGAO")
+    @Column(name = "ID_ORGAO_ATUACAO")
     private Long id;
 
     @Column(name = "MUNICIPIO")
     private String municipio;
 
-    @Column(name = "TP_ORGAO")
+    @Column(name = "TIPO_ORGAO")
     private String tipoOrgao;
 
-    @Column(name = "TEL")
+    @Column(name = "TELEFONE")
     private String telefone;
 
     @Column(name = "CEP")
@@ -34,7 +34,7 @@ public class OrgaoAtuacao {
     @Column(name = "RUA")
     private String rua;
 
-    @Column(name = "NR")
+    @Column(name = "NUMERO")
     private Integer numero;
 
     @Column(name = "COMPLEMENTO")

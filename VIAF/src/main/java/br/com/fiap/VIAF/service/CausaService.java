@@ -1,11 +1,11 @@
-package br.com.fiap.VIAF.Service;
+package br.com.fiap.VIAF.service;
 
 import br.com.fiap.VIAF.DomainModel.Causa;
+import br.com.fiap.VIAF.Exception.ResourceNotFoundException;
 import br.com.fiap.VIAF.Repository.CausaRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CausaService {
@@ -20,15 +20,19 @@ public class CausaService {
         return repository.findAll();
     }
 
-    public Optional<Causa> findById(Long id) {
-        return repository.findById(id);
+    public Causa findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Causa", id));
     }
 
+    @Transactional
     public Causa save(Causa causa) {
         return repository.save(causa);
     }
 
+    @Transactional
     public void delete(Long id) {
+        // pode lançar ResourceNotFound se quiser verificar antes
         repository.deleteById(id);
     }
 }

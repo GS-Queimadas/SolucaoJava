@@ -1,12 +1,12 @@
-package br.com.fiap.VIAF.Service;
+package br.com.fiap.VIAF.service;
 
 import br.com.fiap.VIAF.DomainModel.OrgaoIncendio;
 import br.com.fiap.VIAF.DomainModel.OrgaoIncendioPK;
+import br.com.fiap.VIAF.Exception.ResourceNotFoundException;
 import br.com.fiap.VIAF.Repository.OrgaoIncendioRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrgaoIncendioService {
@@ -21,15 +21,18 @@ public class OrgaoIncendioService {
         return repository.findAll();
     }
 
-    public Optional<OrgaoIncendio> findById(OrgaoIncendioPK id) {
-        return repository.findById(id);
+    public OrgaoIncendio findById(OrgaoIncendioPK pk) {
+        return repository.findById(pk)
+                .orElseThrow(() -> new ResourceNotFoundException("Ligação Órgão–Incêndio", pk));
     }
 
+    @Transactional
     public OrgaoIncendio save(OrgaoIncendio oi) {
         return repository.save(oi);
     }
 
-    public void delete(OrgaoIncendioPK id) {
-        repository.deleteById(id);
+    @Transactional
+    public void delete(OrgaoIncendioPK pk) {
+        repository.deleteById(pk);
     }
 }

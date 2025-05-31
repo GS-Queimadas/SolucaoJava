@@ -1,11 +1,11 @@
-package br.com.fiap.VIAF.Service;
+package br.com.fiap.VIAF.service;
 
 import br.com.fiap.VIAF.DomainModel.CondicaoClimatica;
+import br.com.fiap.VIAF.Exception.ResourceNotFoundException;
 import br.com.fiap.VIAF.Repository.CondicaoClimaticaRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CondicaoClimaticaService {
@@ -20,14 +20,17 @@ public class CondicaoClimaticaService {
         return repository.findAll();
     }
 
-    public Optional<CondicaoClimatica> findById(Long id) {
-        return repository.findById(id);
+    public CondicaoClimatica findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Condição Climática", id));
     }
 
+    @Transactional
     public CondicaoClimatica save(CondicaoClimatica condicao) {
         return repository.save(condicao);
     }
 
+    @Transactional
     public void delete(Long id) {
         repository.deleteById(id);
     }
