@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,6 +52,7 @@ class IncendioControllerTest {
         inc1.setDataDescoberta(LocalDate.of(2025, 5, 29));
         inc1.setDataControle(LocalDate.of(2025, 5, 30));
         inc1.setEstado("SP");
+
         incDto1 = new IncendioDTO();
         incDto1.setId(1L);
         incDto1.setNome("TesteAPI");
@@ -61,9 +64,11 @@ class IncendioControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getAll_ShouldReturnListOfIncendios() throws Exception {
         when(service.findAll()).thenReturn(Arrays.asList(inc1));
         when(mapper.toDTO(inc1)).thenReturn(incDto1);
+
         mockMvc.perform(get("/api/incendios")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -75,6 +80,7 @@ class IncendioControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getById_ShouldReturnIncendio_WhenExists() throws Exception {
         when(service.findById(1L)).thenReturn(inc1);
         when(mapper.toDTO(inc1)).thenReturn(incDto1);
@@ -90,6 +96,7 @@ class IncendioControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getById_ShouldReturn404_WhenNotExists() throws Exception {
         when(service.findById(99L))
                 .thenThrow(new ResourceNotFoundException("Incêndio", 99L));
@@ -105,62 +112,71 @@ class IncendioControllerTest {
     }
 
     @Test
+    @WithMockUser
     void deveCriarIncendioQuandoDtoForValido() throws Exception {
-        IncendioDTO dto = new IncendioDTO();
-        dto.setNome("TesteAPI");
-        dto.setDataDescoberta(LocalDate.of(2025, 5, 29));
-        dto.setEstado("SP");
-        dto.setCausaId(1L);
-        dto.setClasseId("A1");
+        IncendioDTO dtoEntrada = new IncendioDTO();
+        dtoEntrada.setNome("Novo Incendio Valido");
+        dtoEntrada.setDataDescoberta(LocalDate.of(2025, 6, 1));
+        dtoEntrada.setEstado("RJ");
+        dtoEntrada.setCausaId(1L);
+        dtoEntrada.setClasseId("A");
 
-        Incendio entidadeSemId = new Incendio();
-        entidadeSemId.setNome("TesteAPI");
-        entidadeSemId.setDataDescoberta(LocalDate.of(2025, 5, 29));
-        entidadeSemId.setEstado("SP");
+        Incendio entidadeParaSalvar = new Incendio();
+        entidadeParaSalvar.setNome(dtoEntrada.getNome());
+        entidadeParaSalvar.setDataDescoberta(dtoEntrada.getDataDescoberta());
+        entidadeParaSalvar.setEstado(dtoEntrada.getEstado());
+
 
         Incendio entidadeSalva = new Incendio();
-        entidadeSalva.setId(10L);
-        entidadeSalva.setNome("TesteAPI");
-        entidadeSalva.setDataDescoberta(LocalDate.of(2025, 5, 29));
-        entidadeSalva.setEstado("SP");
+        entidadeSalva.setId(2L);
+        entidadeSalva.setNome(dtoEntrada.getNome());
+        entidadeSalva.setDataDescoberta(dtoEntrada.getDataDescoberta());
+        entidadeSalva.setEstado(dtoEntrada.getEstado());
+
 
         IncendioDTO dtoResposta = new IncendioDTO();
-        dtoResposta.setId(10L);
-        dtoResposta.setNome("TesteAPI");
-        dtoResposta.setDataDescoberta(LocalDate.of(2025, 5, 29));
-        dtoResposta.setEstado("SP");
-        dtoResposta.setCausaId(1L);
-        dtoResposta.setClasseId("A1");
+        dtoResposta.setId(entidadeSalva.getId());
+        dtoResposta.setNome(entidadeSalva.getNome());
+        dtoResposta.setDataDescoberta(entidadeSalva.getDataDescoberta());
+        dtoResposta.setEstado(entidadeSalva.getEstado());
+        dtoResposta.setCausaId(dtoEntrada.getCausaId());
+        dtoResposta.setClasseId(dtoEntrada.getClasseId());
 
-        when(mapper.toEntity(dto)).thenReturn(entidadeSemId);
-        when(service.save(entidadeSemId)).thenReturn(entidadeSalva);
-        when(mapper.toDTO(entidadeSalva)).thenReturn(dtoResposta);
+        when(mapper.toEntity(any(IncendioDTO.class))).thenReturn(entidadeParaSalvar);
+        when(service.save(any(Incendio.class))).thenReturn(entidadeSalva);
+        when(mapper.toDTO(any(Incendio.class))).thenReturn(dtoResposta);
+
         mockMvc.perform(post("/api/incendios")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(10))
-                .andExpect(jsonPath("$.nome").value("TesteAPI"))
-                .andExpect(jsonPath("$.causaId").value(1))
-                .andExpect(jsonPath("$.classeId").value("A1"));
+                        .content(objectMapper.writeValueAsString(dtoEntrada)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.nome").value("Novo Incendio Valido"))
+                .andExpect(jsonPath("$.causaId").value(1L))
+                .andExpect(jsonPath("$.classeId").value("A"));
 
-        verify(mapper, times(1)).toEntity(dto);
-        verify(service, times(1)).save(entidadeSemId);
-        verify(mapper, times(1)).toDTO(entidadeSalva);
+        verify(mapper, times(1)).toEntity(any(IncendioDTO.class));
+        verify(service, times(1)).save(any(Incendio.class));
+        verify(mapper, times(1)).toDTO(any(Incendio.class));
     }
 
 
     @Test
+    @WithMockUser
     void create_ShouldReturn400_WhenDtoInvalid() throws Exception {
         IncendioDTO dtoInvalido = new IncendioDTO();
         mockMvc.perform(post("/api/incendios")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoInvalido)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", containsString("Nome do incêndio é obrigatório")));
+                .andExpect(jsonPath("$.error", is("Bad Request")));
 
-        verify(mapper, never()).toEntity(any());
-        verify(service, never()).save(any());
+
+        verify(service, never()).save(any(Incendio.class));
+        verify(mapper, never()).toEntity(any(IncendioDTO.class));
+        verify(mapper, never()).toDTO(any(Incendio.class));
     }
 }

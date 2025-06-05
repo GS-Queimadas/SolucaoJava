@@ -59,6 +59,7 @@ public class IncendioController {
             @ApiResponse(responseCode = "400", description = "Dados fornecidos para criação são inválidos (ex: campos obrigatórios faltando ou formato incorreto).")
     })
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public IncendioDTO create(@Valid @RequestBody IncendioDTO dto) {
         return mapper.toDTO(service.save(mapper.toEntity(dto)));
     }
