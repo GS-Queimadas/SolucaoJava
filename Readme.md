@@ -1,25 +1,36 @@
 
-# 🔥 Solução Java para Monitoramento de Queimadas
+# 🔥 VIAF – Vigilância Ativa do Fogo
 
-Este é um projeto Java com **Spring Boot**, criado para facilitar o **gerenciamento de informações sobre queimadas**. O sistema permite **cadastrar, consultar, atualizar e excluir ocorrências de queimadas**, com o objetivo de auxiliar o trabalho de órgãos ambientais e da defesa civil.
+Este projeto, desenvolvido em **Java 17 com Spring Boot**, representa o backend do **VIAF – Vigilância Ativa do Fogo**. A solução visa centralizar e gerenciar informações sobre queimadas, fornecendo uma API RESTful para cadastrar, consultar e gerenciar ocorrências, regiões, agentes e causas.
 
-Nos últimos anos, o Brasil tem enfrentado um aumento expressivo nas queimadas, causadas por estiagens e práticas humanas como a limpeza de áreas com fogo. Isso gera graves prejuízos ambientais, sociais e econômicos. Apesar de sistemas nacionais de monitoramento como os do INPE, ainda existem desafios na **integração e descentralização das informações**, especialmente para os órgãos municipais.
+## Contexto do Problema
 
-Pensando nisso, foi idealizado o **VIAF – Vigilância Ativa do Fogo**, uma plataforma digital voltada ao suporte de decisões em tempo real. O sistema busca integrar dados operacionais, climáticos, geográficos e institucionais, promovendo uma atuação mais estratégica e colaborativa entre **prefeituras, Defesa Civil e Corpo de Bombeiros**.
+As queimadas representam um grave problema ambiental e social no Brasil. A descentralização de dados e a falta de ferramentas integradas dificultam uma resposta rápida e coordenada por parte de órgãos municipais, como a Defesa Civil e o Corpo de Bombeiros. O VIAF foi idealizado para ser uma plataforma que integra dados operacionais e geográficos, promovendo uma atuação mais estratégica e colaborativa no combate às queimadas.
 
-Este projeto representa o início da construção do VIAF por meio de um **protótipo de banco de dados relacional** e de uma aplicação backend que permitirá registrar e consultar informações fundamentais sobre queimadas, suas causas, condições climáticas envolvidas e ações de resposta.
+---
 
+## 🏛️ Arquitetura da Solução
+
+A aplicação foi estruturada seguindo uma arquitetura em camadas para garantir a separação de responsabilidades, alta coesão e baixo acoplamento, facilitando a manutenção e a escalabilidade.
+
+-   **`Controller` (Camada de Apresentação):** Responsável por expor os endpoints da API REST, validar as requisições HTTP e serializar as respostas. Delega toda a lógica de negócio para a camada de Serviço.
+-   **`Service` (Camada de Negócio):** Orquestra a lógica de negócio da aplicação. Realiza validações, processa os dados e coordena as interações entre os repositórios.
+-   **`Repository` (Camada de Acesso a Dados):** Interfaces que estendem `JpaRepository` e abstraem a comunicação com o banco de dados, provendo métodos para operações CRUD.
+-   **`DTO` (Data Transfer Object):** Objetos que transferem dados entre as camadas, especialmente entre `Controller` e `Service`. Evitam a exposição direta das entidades de domínio na API.
+-   **`Model` (Camada de Domínio):** Contém as entidades JPA (`@Entity`) que representam os conceitos de negócio, como `Ocorrencia`, `Regiao`, etc.
+-   **`Config` (Camada de Configuração):** Centraliza as configurações da aplicação, como a de segurança com Spring Security.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
-- ☕ **Java 17**
-- 🌱 **Spring Boot 3.x**
-- 💾 **Spring Data JPA**
-- 🧪 **H2 Database** (para testes)
-- 📦 **Maven**
-
+-   ☕ **Java 17**
+-   🌱 **Spring Boot 3.5.0**
+-   💾 **Spring Data JPA**
+-   🛡️ **Spring Security** (Autenticação e Autorização)
+-   🧪 **H2 Database** (Banco de dados em memória)
+-   📦 **Maven** (Gerenciador de dependências)
+-   📖 **Swagger (Springdoc)** (Documentação da API)
 ---
 
 
@@ -33,6 +44,8 @@ Antes de rodar o projeto, você precisa ter:
 ---
 
 ## ▶️ Como Executar
+
+> ⚠️ **Observação:** indicamos que execute esse código pela IDE InteliJ, pasra melhor visualização do projeto
 
 1. **Clone o repositório:**
 
@@ -52,17 +65,23 @@ cd SolucaoJava
 mvn spring-boot:run
 ```
 
-🔗 A aplicação estará disponível em: `http://localhost:8080/swagger-ui/index.html`
+🔗 A aplicação estará disponível em: `http://localhost:8080`
 
-Acesso administrativo:
-usuário: admin
-senha: admin
-
-Acesso usuários comuns:
-usuário: user
-senha: password
 ---
+### 🔐 Credenciais de Acesso
 
+- ### Usuário Admin (pode ler e escrever):
+    -   `usuário: admin`
+    -   `senha: admin`
+
+
+- ### Usuário Comum (pode apenas ler):
+    -   `usuário: user`
+    -   `senha: password`
+
+### 📖 Documentação Interativa (Swagger)
+Para explorar todos os endpoints de forma interativa, acesse:
+🔗 **http://localhost:8080/swagger-ui/index.html**
 
 ## 💡 Observações
 
@@ -72,10 +91,14 @@ Este projeto é parte da solução desenvolvida para a disciplina de Engenharia 
 
 Desenvolvido com 💻 por [GS-Queimadas](https://github.com/GS-Queimadas)
 
-```
+---
+
+## 👨‍💻 Desenvolvedores
+
 André de Sousa Neves - RM553515
 
 Isabela Barcellos Freire  - RM553746
 
 Thaís Gonçalves Leoncio - RM553892
 
+---

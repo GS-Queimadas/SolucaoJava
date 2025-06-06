@@ -1,4 +1,4 @@
-package br.com.fiap.VIAF.config;
+package br.com.fiap.VIAF.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
