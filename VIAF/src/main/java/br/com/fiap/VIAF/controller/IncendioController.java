@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class IncendioController {
     private final IncendioService service;
     private final IncendioMapper mapper;
 
+    @Autowired
     public IncendioController(IncendioService service, IncendioMapper mapper) {
         this.service = service;
         this.mapper = mapper;

@@ -1,22 +1,32 @@
-package br.com.fiap.VIAF.config;
+package br.com.fiap.VIAF.Config;
 
+
+import br.com.fiap.VIAF.Config.JwtAuthenticationFilter;
+import br.com.fiap.VIAF.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    private final UsuarioService usuarioService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(UsuarioService usuarioService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.usuarioService = usuarioService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -24,28 +34,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        UserDetails user = User.builder().username("user").password(passwordEncoder().encode("password")).roles("USER").build();
-
-        UserDetails admin = User.builder().username("admin").password(passwordEncoder().encode("admin")).roles("ADMIN", "USER").build();
-
-        return new InMemoryUserDetailsManager(user, admin);
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(usuarioService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(authProvider);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                .requestMatchers("/public/**", "/h2-console/**").permitAll() // Exemplo, ajuste conforme necessário
-                                .anyRequest().authenticated()
-                )
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

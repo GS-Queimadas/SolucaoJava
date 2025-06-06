@@ -4,7 +4,10 @@ import br.com.fiap.VIAF.DomainModel.Incendio;
 import br.com.fiap.VIAF.Dto.IncendioDTO;
 import br.com.fiap.VIAF.Exception.ResourceNotFoundException;
 import br.com.fiap.VIAF.Mapper.IncendioMapper;
+import br.com.fiap.VIAF.Repository.UsuarioRepository;
 import br.com.fiap.VIAF.service.IncendioService;
+import br.com.fiap.VIAF.service.TokenService;
+import br.com.fiap.VIAF.service.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +43,15 @@ class IncendioControllerTest {
 
     @MockBean
     private IncendioMapper mapper;
+
+    @MockBean
+    private TokenService tokenService;
+
+    @MockBean
+    private UsuarioService usuarioService;
+
+    @MockBean
+    private UsuarioRepository usuarioRepository;
 
     private Incendio inc1;
     private IncendioDTO incDto1;
